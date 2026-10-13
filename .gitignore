@@ -2,6 +2,15 @@
 __pycache__/
 *.pyc
 .env
+.env.example
 contatos.csv
 imagem.jpeg
 *.log
+
+# Perfis, caches e dados locais do Chrome/Selenium
+.chrome_whatsapp/
+.chrome_whatsapp_novo/
+.diagnostic_chrome/
+
+# Artefatos locais de ferramentas e execução
+se-metadata.json
