@@ -59,16 +59,45 @@ Na primeira execução interativa, o WhatsApp Web pode solicitar autenticação 
 
 ### Com `uv`
 
-Na raiz do projeto:
+O `uv` utiliza o `pyproject.toml` como fonte das dependências e o `uv.lock` para reproduzir as versões resolvidas. Instale o `uv` caso ainda não esteja disponível e confirme a instalação:
+
+```bash
+uv --version
+```
+
+Na raiz do projeto, confirme também a versão do Python:
+
+```bash
+python --version
+```
+
+O projeto declara Python `>=3.14`. Depois, sincronize o ambiente:
 
 ```bash
 uv sync
 ```
 
-### Com ambiente virtual e `pip`
+O comando cria ou atualiza `.venv/` e instala as dependências declaradas no projeto, atualmente `selenium` e `openpyxl`.
+
+Para verificar se o ambiente foi criado corretamente:
 
 ```bash
-python -m venv .venv
+uv run python --version
+uv run python -c "import openpyxl, selenium; print('Dependências instaladas com sucesso')"
+```
+
+Não é necessário ativar `.venv/` para executar o programa com `uv`. O comando recomendado é:
+
+```bash
+uv run python main.py --dry-run
+```
+
+Se preferir ativar o ambiente manualmente, use os comandos abaixo.
+
+Linux/macOS:
+
+```bash
+source .venv/bin/activate
 ```
 
 Windows PowerShell:
@@ -83,11 +112,73 @@ Windows Prompt de Comando:
 .venv\Scripts\activate
 ```
 
-Instale as dependências definidas no `pyproject.toml`:
+### Com ambiente virtual e `pip`
+
+Esta alternativa instala o próprio projeto a partir do `pyproject.toml`. Não existe `requirements.txt` no repositório, portanto não use `pip install -r requirements.txt`.
+
+Confirme primeiro que o Python disponível atende ao requisito do projeto:
 
 ```bash
+python --version
+```
+
+Crie o ambiente virtual:
+
+```bash
+python -m venv .venv
+```
+
+Ative-o no Linux/macOS:
+
+```bash
+source .venv/bin/activate
+```
+
+No Windows PowerShell:
+
+```powershell
+.venv\Scripts\Activate.ps1
+```
+
+No Windows Prompt de Comando:
+
+```cmd
+.venv\Scripts\activate
+```
+
+Com o ambiente ativado, atualize o instalador e instale o projeto:
+
+```bash
+python -m pip install --upgrade pip
 python -m pip install .
 ```
+
+O ponto final (`.`) indica a pasta atual e faz o `pip` ler as dependências de `pyproject.toml`. Para validar a instalação:
+
+```bash
+python -c "import openpyxl, selenium; print('Dependências instaladas com sucesso')"
+```
+
+Depois da validação, execute uma simulação:
+
+```bash
+python main.py --dry-run
+```
+
+Para sair do ambiente virtual quando terminar:
+
+```bash
+deactivate
+```
+
+### Diferença entre as opções
+
+| Opção | Quando usar | Comando de execução |
+|---|---|---|
+| `uv` | Instalação reprodutível usando o lockfile do projeto. | `uv run python main.py` |
+| `pip` | Ambiente virtual Python tradicional, sem depender do `uv`. | `python main.py` |
+
+Não é necessário executar as duas formas de instalação. Escolha uma delas para preparar o ambiente.
 
 ## ⚙️ Preparação dos arquivos
 
