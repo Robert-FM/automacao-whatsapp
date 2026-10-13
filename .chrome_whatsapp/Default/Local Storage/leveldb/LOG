@@ -1,0 +1,9 @@
+2026/10/08-16:02:10.445 2500 Reusing MANIFEST C:\Users\Robert Fernandes\Documents\Workspace\whatsapp_automation\.chrome_whatsapp\Default\Local Storage\leveldb/MANIFEST-000001
+2026/10/08-16:02:10.445 2500 Recovering log #7
+2026/10/08-16:02:10.447 2500 Reusing old log C:\Users\Robert Fernandes\Documents\Workspace\whatsapp_automation\.chrome_whatsapp\Default\Local Storage\leveldb/000007.log 
+2026/10/08-16:03:09.459 2ce8 Level-0 table #11: started
+2026/10/08-16:03:09.464 2ce8 Level-0 table #11: 14953 bytes OK
+2026/10/08-16:03:09.466 2ce8 Delete type=0 #7
+2026/10/08-16:05:18.800 2ce8 Level-0 table #13: started
+2026/10/08-16:05:18.803 2ce8 Level-0 table #13: 13978 bytes OK
+2026/10/08-16:05:18.805 2ce8 Delete type=0 #10

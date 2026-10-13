@@ -1,0 +1,10 @@
+[project]
+name = "whatsapp-automation-improved"
+version = "0.1.0"
+description = "Add your description here"
+readme = "README.md"
+requires-python = ">=3.14"
+dependencies = [
+    "openpyxl>=3.1",
+    "selenium>=4.20",
+]

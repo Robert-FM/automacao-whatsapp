@@ -1,0 +1,22 @@
+2026/10/08-15:49:45.844 2b40 Reusing MANIFEST C:\Users\Robert Fernandes\Documents\Workspace\whatsapp_automation\.chrome_whatsapp\Default\IndexedDB\https_web.whatsapp.com_0.indexeddb.leveldb/MANIFEST-000001
+2026/10/08-15:49:45.845 2b40 Recovering log #246
+2026/10/08-15:49:45.851 2b40 Reusing old log C:\Users\Robert Fernandes\Documents\Workspace\whatsapp_automation\.chrome_whatsapp\Default\IndexedDB\https_web.whatsapp.com_0.indexeddb.leveldb/000246.log 
+2026/10/08-15:50:01.255 33b0 Level-0 table #256: started
+2026/10/08-15:50:01.274 33b0 Level-0 table #256: 1310340 bytes OK
+2026/10/08-15:50:01.275 33b0 Delete type=0 #246
+2026/10/08-15:50:01.317 33b0 Compacting 1@1 + 6@2 files
+2026/10/08-15:50:01.362 33b0 Generated table #257@1: 65861 keys, 2207063 bytes
+2026/10/08-15:50:01.410 33b0 Generated table #258@1: 84219 keys, 2233202 bytes
+2026/10/08-15:50:01.457 33b0 Generated table #259@1: 77023 keys, 2283957 bytes
+2026/10/08-15:50:01.501 33b0 Generated table #260@1: 51794 keys, 2215200 bytes
+2026/10/08-15:50:01.533 33b0 Generated table #261@1: 12078 keys, 2187712 bytes
+2026/10/08-15:50:01.565 33b0 Generated table #262@1: 20470 keys, 1441019 bytes
+2026/10/08-15:50:01.565 33b0 Compacted 1@1 + 6@2 files => 12568153 bytes
+2026/10/08-15:50:01.566 33b0 compacted to: files[ 0 0 6 0 0 0 0 ]
+2026/10/08-15:50:01.566 33b0 Delete type=2 #248
+2026/10/08-15:50:01.566 33b0 Delete type=2 #249
+2026/10/08-15:50:01.566 33b0 Delete type=2 #250
+2026/10/08-15:50:01.566 33b0 Delete type=2 #251
+2026/10/08-15:50:01.566 33b0 Delete type=2 #252
+2026/10/08-15:50:01.566 33b0 Delete type=2 #253
+2026/10/08-15:50:01.566 33b0 Delete type=2 #256
