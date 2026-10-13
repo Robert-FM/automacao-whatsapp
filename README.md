@@ -148,6 +148,36 @@ Os argumentos disponíveis podem ser consultados com:
 uv run python main.py --help
 ```
 
+### Parâmetros disponíveis
+
+| Parâmetro | Padrão | Descrição |
+|---|---|---|
+| `--excel` | `zap cursistas.xlsx` | Caminho da planilha de contatos. |
+| `--mensagem` | `msm2.txt` | Arquivo `.txt` com a mensagem. |
+| `--coluna` | `zap` | Nome da coluna que contém os telefones. |
+| `--perfil` | `.chrome_whatsapp` | Diretório do perfil separado do Chrome pessoal. |
+| `--perfil-chrome` | `Default` | Nome do perfil do Chrome utilizado. |
+| `--minimo` | `5` | Intervalo mínimo entre envios, em segundos. |
+| `--maximo` | `10` | Intervalo máximo entre envios, em segundos. |
+| `--timeout` | `45` | Tempo máximo de espera por elemento do WhatsApp Web. |
+| `--dry-run` | desativado | Lista os contatos sem realizar envios. |
+| `--numero` | nenhum | Substitui a planilha e envia para um único número. |
+| `--headless` | desativado | Executa o Chrome sem janela visível. |
+
+### Exemplo completo
+
+O exemplo abaixo usa uma planilha diferente, uma mensagem alternativa, uma coluna chamada `telefone`, intervalo de 10 a 20 segundos e tempo limite de 60 segundos:
+
+```bash
+uv run python main.py --excel "contatos.xlsx" --mensagem msm.txt --coluna telefone --minimo 10 --maximo 20 --timeout 60
+```
+
+Antes de executar um envio real, valide a entrada com:
+
+```bash
+uv run python main.py --excel "contatos.xlsx" --mensagem msm.txt --coluna telefone --dry-run
+```
+
 ## 🔄 Fluxo de processamento
 
 1. `main.py` configura os logs, interpreta os argumentos e chama o executor.
@@ -157,6 +187,37 @@ uv run python main.py --help
 5. O Selenium inicia o Chrome e acessa o WhatsApp Web para cada número.
 6. A mensagem é enviada com `Enter` e o script aguarda um intervalo aleatório entre `--minimo` e `--maximo`.
 7. Ao final, o navegador é encerrado e o terminal informa a quantidade de envios e falhas.
+
+## 🏗️ Organização do código
+
+O projeto possui uma organização simples, dividida entre o ponto de entrada e o módulo responsável pela automação:
+
+- `main.py`: configura o logging e inicia a execução.
+- `whatsapp_sender.py`: contém a configuração, leitura dos contatos, leitura das mensagens, automação do navegador e interpretação dos argumentos.
+- `pyproject.toml`: define o pacote, a versão mínima do Python e as dependências.
+- `uv.lock`: registra as versões resolvidas pelo `uv`.
+- `zap cursistas.xlsx`: planilha usada como entrada padrão.
+- `msm.txt` e `msm2.txt`: mensagens disponíveis para envio.
+- `chromedriver/`: driver local do Chrome incluído no repositório.
+
+Não há servidor, banco de dados, API própria ou interface gráfica implementados. A interação ocorre diretamente no navegador controlado pelo Selenium.
+
+## 📤 Entradas e saídas
+
+### Entradas
+
+- Planilha Excel com os números de telefone.
+- Arquivo de texto contendo a mensagem.
+- Argumentos opcionais da linha de comando.
+- Sessão autenticada do WhatsApp Web no perfil do Chrome.
+
+### Saídas
+
+- Mensagens enviadas pelo WhatsApp Web.
+- Logs no terminal com contatos carregados, progresso, avisos e falhas.
+- Diretório de perfil do Chrome criado ou atualizado durante a execução.
+
+O script não gera um relatório persistente de envios. O resumo final permanece apenas no log exibido no terminal.
 
 ## 🧪 Testes
 
@@ -169,6 +230,48 @@ Não foram encontrados testes automatizados no projeto. O modo `--dry-run` pode 
 - O envio pode falhar por números inválidos, indisponibilidade do WhatsApp Web, alterações no navegador ou expiração do tempo limite.
 - O uso deve respeitar as regras do WhatsApp, a legislação aplicável e o consentimento dos destinatários.
 - O diretório de perfil do Chrome pode conter dados de sessão e deve ser tratado como informação privada.
+
+## 🧰 Solução de problemas
+
+### A coluna não foi encontrada
+
+Confirme se o nome usado em `--coluna` corresponde ao cabeçalho da primeira linha da planilha. Por exemplo:
+
+```bash
+uv run python main.py --coluna Zap --dry-run
+```
+
+A comparação não diferencia letras maiúsculas e minúsculas, mas o nome precisa existir.
+
+### A planilha ou a mensagem não foi encontrada
+
+Informe o caminho correto explicitamente:
+
+```bash
+uv run python main.py --excel "dados/contatos.xlsx" --mensagem "mensagens/boas-vindas.txt" --dry-run
+```
+
+### O WhatsApp Web não conclui o carregamento
+
+Verifique se o Chrome está instalado, se a conta foi autenticada e se o tempo limite é suficiente:
+
+```bash
+uv run python main.py --timeout 90
+```
+
+### O perfil do Chrome está em uso
+
+Feche outras instâncias que estejam usando o mesmo diretório ou informe outro perfil:
+
+```bash
+uv run python main.py --perfil .chrome_whatsapp_novo
+```
+
+Não compartilhe nem publique diretórios de perfil, pois eles podem conter dados de sessão.
+
+### Um número é considerado inválido
+
+O código aceita números que, após a limpeza, tenham pelo menos 12 dígitos. Números brasileiros com 10 ou 11 dígitos recebem automaticamente o prefixo `55`; outros formatos devem ser fornecidos já com o código do país.
 
 ## 👨‍💻 Autor
 
