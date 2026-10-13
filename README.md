@@ -1,228 +1,179 @@
-# 🚀 WhatsApp Automation with Selenium
+# 📱 Automação de Envio de Mensagens pelo WhatsApp Web
 
-Automação de envio de mensagens no WhatsApp Web utilizando **Python + Selenium**, com suporte para múltiplos contatos e manutenção de sessão/login.
+Script em Python para enviar uma mensagem para contatos listados em uma planilha Excel usando o WhatsApp Web e Selenium.
 
----
+O programa normaliza números brasileiros, remove duplicidades, lê a mensagem de um arquivo de texto e aguarda um intervalo aleatório entre os envios. Também oferece modo de simulação (`dry-run`), envio para um único número e reutilização de um perfil separado do Chrome.
 
-## 📌 Funcionalidades
+## ✨ Funcionalidades
 
-- Envio automático de mensagens pelo WhatsApp Web
-- Suporte para múltiplos números
-- Persistência de login com perfil do Chrome
-- Estrutura simples e fácil de modificar
-- Base pronta para expansão com:
-  - envio de imagens
-  - envio de arquivos
-  - integração com planilhas
-  - automações com PyAutoGUI
-  - migração futura para Playwright
-
----
+- Leitura dos contatos a partir de uma planilha `.xlsx`.
+- Seleção da coluna de telefones por nome do cabeçalho.
+- Normalização de números: remoção de caracteres não numéricos e inclusão do código do Brasil (`55`) para números com 10 ou 11 dígitos.
+- Remoção de contatos duplicados.
+- Leitura da mensagem a partir de um arquivo `.txt`.
+- Envio pelo WhatsApp Web com Selenium.
+- Intervalo aleatório entre os envios.
+- Persistência de sessão por meio de um diretório de perfil do Chrome.
+- Modo `dry-run`, que valida e lista os contatos sem enviar mensagens.
+- Opção de envio para apenas um número com `--numero`.
+- Registro de progresso, avisos e falhas no terminal.
+- Opção de execução sem janela visível com `--headless`.
 
 ## 🛠️ Tecnologias utilizadas
 
-- Python 3
-- Selenium
-- ChromeDriver
-- PyAutoGUI *(opcional para automações complementares)*
+- Python 3.14, conforme `.python-version` e `pyproject.toml`.
+- Selenium `>=4.20` para controlar o navegador e o WhatsApp Web.
+- OpenPyXL `>=3.1` para leitura da planilha Excel.
+- ChromeDriver incluído em `chromedriver/win64/154.0.8037.92/`.
+- `uv` para sincronização do ambiente a partir de `pyproject.toml` e `uv.lock`.
 
----
+## 📁 Estrutura do projeto
 
-## 📂 Estrutura do projeto
-
-```bash
-project_zap/
-│
-├── .env.example
-├── .gitignore
-├── .python-version
-├── README.md
+```text
+whatsapp_automation/
+├── chromedriver/win64/154.0.8037.92/chromedriver.exe
+├── contatos_exemplo.csv
 ├── main.py
-├── whatsapp_service.py
-├── contatos_excel.py
-└── .venv/
+├── msm.txt
+├── msm2.txt
+├── pyproject.toml
+├── README.md
+├── uv.lock
+├── whatsapp_sender.py
+└── zap cursistas.xlsx
 ```
 
----
+Arquivos gerados durante a execução, como `.venv/`, `__pycache__/` e os perfis `.chrome_whatsapp/`, não fazem parte do fluxo documentado.
 
-## ⚙️ Instalação
+## 📋 Pré-requisitos
 
-### 1️⃣ Clone o repositório
+- Python 3.14.
+- Google Chrome instalado.
+- Uma conta com acesso ao WhatsApp Web.
+- `uv` para a instalação recomendada ou `pip` para a alternativa tradicional.
+- Uma planilha Excel com uma linha de cabeçalho contendo a coluna de telefones.
+
+Na primeira execução interativa, o WhatsApp Web pode solicitar autenticação por QR Code. O perfil padrão usado pelo script é `.chrome_whatsapp`, separado do perfil pessoal do Chrome.
+
+## 📦 Instalação
+
+### Com `uv`
+
+Na raiz do projeto:
 
 ```bash
-git clone https://github.com/seu-usuario/project_zap.git
+uv sync
 ```
 
----
-
-### 2️⃣ Acesse a pasta do projeto
+### Com ambiente virtual e `pip`
 
 ```bash
-cd project_zap
+python -m venv .venv
 ```
 
----
+Windows PowerShell:
 
-### 3️⃣ Crie o ambiente virtual
-
-Usando `uv`:
-
-```bash
-uv venv
+```powershell
+.venv\Scripts\Activate.ps1
 ```
 
-Ative o ambiente:
+Windows Prompt de Comando:
 
-#### Linux/macOS
-
-```bash
-source .venv/bin/activate
-```
-
-#### Windows
-
-```bash
+```cmd
 .venv\Scripts\activate
 ```
 
----
-
-### 4️⃣ Instale as dependências
+Instale as dependências definidas no `pyproject.toml`:
 
 ```bash
-uv pip install selenium pyautogui
+python -m pip install .
 ```
 
-ou
+## ⚙️ Preparação dos arquivos
 
-```bash
-pip install selenium pyautogui
+### Planilha de contatos
+
+Por padrão, o script procura `zap cursistas.xlsx` e a coluna `zap`. O cabeçalho é comparado sem distinção entre maiúsculas e minúsculas.
+
+Exemplo:
+
+```text
+Nome | Zap             | E-mail
+Ana  | (41) 99948-0821 | ana@example.com
 ```
 
----
+O programa utiliza apenas a coluna informada em `--coluna`. Linhas vazias são ignoradas e números inválidos são registrados como avisos.
+
+### Arquivo da mensagem
+
+Por padrão, a mensagem é lida de `msm2.txt`. O arquivo deve estar em UTF-8 e não pode estar vazio. O projeto também contém `msm.txt` como outra mensagem disponível.
 
 ## ▶️ Como executar
+
+Com `uv`:
+
+```bash
+uv run python main.py
+```
+
+Com o ambiente virtual ativado:
 
 ```bash
 python main.py
 ```
 
-Na primeira execução:
+### Simulação sem envio
 
-- O Chrome será aberto
-- Faça login no WhatsApp Web via QR Code
-- O perfil será salvo automaticamente
-
----
-
-## 📱 Exemplo de código
-
-```python
-from selenium import webdriver
-from selenium.webdriver.common.by import By
-from selenium.webdriver.common.keys import Keys
-import time
-
-# Lista de números com DDI + DDD + número
-numeros = [
-    "5581999999999",
-    "5581988888888"
-]
-
-mensagem = "Olá! Mensagem automática via WhatsApp."
-
-# Configuração do Chrome
-options = webdriver.ChromeOptions()
-options.add_argument("--user-data-dir=./profile")
-
-driver = webdriver.Chrome(options=options)
-
-def enviar_mensagem(numero):
-    link = f"https://wa.me/{numero}"
-
-    driver.get(link)
-
-    time.sleep(3)
-
-    try:
-        botao_abrir = driver.find_element(
-            By.XPATH,
-            '//a[contains(@href,"web.whatsapp.com/send")]'
-        )
-
-        botao_abrir.click()
-
-        time.sleep(5)
-
-        caixa_mensagem = driver.find_element(
-            By.XPATH,
-            '//div[@contenteditable="true"][@data-tab="10"]'
-        )
-
-        caixa_mensagem.send_keys(mensagem)
-        caixa_mensagem.send_keys(Keys.ENTER)
-
-        print(f"Mensagem enviada para {numero}")
-
-    except Exception as e:
-        print(f"Erro ao enviar para {numero}: {e}")
-
-for numero in numeros:
-    enviar_mensagem(numero)
-
-driver.quit()
+```bash
+uv run python main.py --dry-run
 ```
 
----
+### Envio para um único número
 
-## 🔥 Melhorias futuras
+```bash
+uv run python main.py --numero 5581999999999
+```
 
-- [ ] Migração para Playwright
-- [ ] Interface gráfica com CustomTkinter
-- [ ] Integração com Excel/CSV
-- [ ] Agendamento de mensagens
-- [ ] Dashboard de envio
-- [ ] Sistema de logs
-- [ ] Retry automático
-- [ ] Envio de imagens e PDFs
+Quando `--numero` é informado, ele substitui a lista carregada da planilha.
 
----
+### Usar outros arquivos ou parâmetros
 
-## ⚠️ Aviso
+```bash
+uv run python main.py --excel "outra_planilha.xlsx" --mensagem msm.txt --coluna telefone --minimo 8 --maximo 15 --timeout 60
+```
 
-Este projeto é apenas para fins educacionais e automação pessoal.
+Os argumentos disponíveis podem ser consultados com:
 
-O uso excessivo pode violar os termos de uso do WhatsApp.
+```bash
+uv run python main.py --help
+```
 
-Use com responsabilidade.
+## 🔄 Fluxo de processamento
 
----
+1. `main.py` configura os logs, interpreta os argumentos e chama o executor.
+2. `whatsapp_sender.py` abre a planilha e identifica a coluna configurada.
+3. Os números são normalizados, validados e deduplicados.
+4. A mensagem é lida do arquivo informado.
+5. O Selenium inicia o Chrome e acessa o WhatsApp Web para cada número.
+6. A mensagem é enviada com `Enter` e o script aguarda um intervalo aleatório entre `--minimo` e `--maximo`.
+7. Ao final, o navegador é encerrado e o terminal informa a quantidade de envios e falhas.
+
+## 🧪 Testes
+
+Não foram encontrados testes automatizados no projeto. O modo `--dry-run` pode ser usado para verificar a leitura, normalização e deduplicação dos contatos antes de um envio real.
+
+## ⚠️ Limitações e cuidados
+
+- O fluxo depende da interface do WhatsApp Web e pode ser afetado por alterações nessa interface.
+- O script não configura credenciais nem variáveis de ambiente; a autenticação é feita no navegador.
+- O envio pode falhar por números inválidos, indisponibilidade do WhatsApp Web, alterações no navegador ou expiração do tempo limite.
+- O uso deve respeitar as regras do WhatsApp, a legislação aplicável e o consentimento dos destinatários.
+- O diretório de perfil do Chrome pode conter dados de sessão e deve ser tratado como informação privada.
 
 ## 👨‍💻 Autor
 
-### Robert Fernandes de Melo
+**Robert Melo**
 
-- Python Developer
-- Automação de processos
-- Web Scraping
-- Data Science & IA
+🔗 LinkedIn: [linkedin.com/in/robertdemelo](https://www.linkedin.com/in/robertdemelo/)
 
-#### GitHub
-
-```txt
-https://github.com/seu-usuario
-```
-
-#### LinkedIn
-
-```txt
-https://linkedin.com/in/seu-link
-```
-
----
-
-## ⭐ Contribuição
-
-Pull requests são bem-vindos.
-
-Caso encontre bugs ou queira sugerir melhorias, abra uma issue.
+🐍 Python | Selenium | OpenPyXL | Automação de processos
